@@ -1,4 +1,4 @@
-name : Timeline Service
+name : API Gateway
 
 on: push
 
