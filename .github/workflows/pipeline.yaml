@@ -37,25 +37,27 @@ jobs:
 
 
 
-  # deploy:
-  #   needs: [build]
-  #   if: success()
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout source code
-  #       uses: actions/checkout@v3
-  #     - id: auth
-  #       name: Authenticate to Google Cloud
-  #       uses: google-github-actions/auth@v1
-  #       with:
-  #         credentials_json: ${{ secrets.GOOGLE_KUBERNETES_SERVICE_ACCOUNT }}
-  #     - name: Set up Cloud SDK
-  #       uses: google-github-actions/setup-gcloud@v1
-  #     - run: |-
-          
-  #         gcloud container clusters get-credentials autopilot-cluster-1 --region europe-west1 --project scenic-era-371315
+  deploy:
+    needs: [build]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - id: auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_KUBERNETES_SERVICE_ACCOUNT }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+      - run: |-
+          gcloud components install gke-gcloud-auth-plugin
+          gcloud components update
+          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+          gcloud container clusters get-credentials autopilot-cluster-1 --region europe-west1 --project even-envoy-369215
 
-  #     - name: Deploy
-  #       run: |-
-  #         cd k8s
-  #         kubectl apply -f deployment.yaml
+      - name: Deploy
+        run: |-
+          cd k8s
+          kubectl apply -f deployment.yaml
