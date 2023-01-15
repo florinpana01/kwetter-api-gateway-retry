@@ -1,19 +1,15 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './user.controller';
-import { User } from './user.entity';
-import { UserService } from './user.service';
+import { PassportModule } from '@nestjs/passport/dist';
+import { AuthService } from './auth.service';
+import { jwtConstants } from './constants';
+import { JwtStrategy } from './jwt.strategy';
+import { LocalStrategy } from './local.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    UserModule,
-    JwtModule.register({
-      secret: 'secret',
-      signOptions: {expiresIn: '1d'}
-    }),
+    PassportModule,
     ClientsModule.register([
       {
         name: 'USER_SERVICE',
@@ -27,9 +23,12 @@ import { UserService } from './user.service';
         },
       },
     ]),
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
-  controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService]
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
-export class UserModule {}
+export class AuthModule {}

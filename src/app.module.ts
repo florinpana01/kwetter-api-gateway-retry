@@ -7,6 +7,7 @@ import { PostModule } from './post/post.module';
 import { rootCertificates } from 'tls';
 import { LikeModule } from './like/like.module';
 import { FollowModule } from './follow/follow.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ 
@@ -26,7 +27,8 @@ import { FollowModule } from './follow/follow.module';
   UserModule,
   PostModule,
   LikeModule,
-  FollowModule
+  FollowModule,
+  AuthModule
 ],
   controllers: [AppController],
   providers: [AppService],

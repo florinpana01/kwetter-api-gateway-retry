@@ -1,10 +1,12 @@
-import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ClientProxy, EventPattern } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 import { JwtService } from '@nestjs/jwt/dist/jwt.service';
 import { Response, Request } from 'express';
+import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -16,6 +18,7 @@ export class UserController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     async all() {
         const result = this.client.send('user_request_all', {});
@@ -52,6 +55,7 @@ export class UserController {
         // return user; 
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('login')
     async login(
         @Body('email') email: string,
@@ -79,6 +83,7 @@ export class UserController {
         };
     }
 
+    //@UseGuards(JwtAuthGuard)
     @Get('user')
     async user(@Req() request: Request) {
         console.log('we are here', request);
@@ -92,6 +97,7 @@ export class UserController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('logout')
     async logout(@Res({ passthrough: true }) response: Response
     ) {
